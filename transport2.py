@@ -164,13 +164,20 @@ if __name__ == "__main__":
     a = AirlineTransportation(input_value[0], input_value[1])
     destination_code = a.destination_code
     distance, path, airline, stops = a.dijsktra()
-
+    # Output
     for i in range(len(path)-1):
         # airline code, from airport, to airport, stops
-        print(airline[path[i+1]], path[i], path[i+1], stops[path[i+1]])
+        print(i+1, airline[path[i+1]], path[i], path[i+1], stops[path[i+1]])
 
-    # total distance
-    print(distance[destination_code])
+    # Total flights
+    print("Total flights: ", len(path)-1)
 
-    print(stops.get('total'))
+    # Total stops
+    print("Total additional stops: ", stops.get('total'))
+
+    # Total distance
+    print("Total distance: ", distance[destination_code])
+
+    # Optimality criteria
+    print("Optimality criteria: distance")
 
