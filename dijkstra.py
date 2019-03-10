@@ -10,6 +10,7 @@ class Graph:
 
     def add_edge(self, from_node, to_node, distance):
         self.nodes.add(from_node)
+        self.nodes.add(to_node)
         self.edges[from_node].append(to_node)
         self.distances[from_node, to_node] = distance
 
@@ -17,10 +18,10 @@ class Graph:
 def dijkstra(graph, initial, target):
     visited = {initial: 0}
     h = [(0, initial)]
-    path = {}
+    path = []
 
     nodes = set(graph.nodes)
-
+    print(graph.edges)
     while nodes and h:
         current_weight, min_node = heapq.heappop(h)
         try:
@@ -29,31 +30,27 @@ def dijkstra(graph, initial, target):
         except IndexError:
             break
 
+        nodes.remove(min_node)
+        path.append(min_node)
+        
         if min_node == target:
             return visited, path
-
-        nodes.remove(min_node)
 
         for v in graph.edges[min_node]:
             weight = current_weight + graph.distances[min_node, v]
             if v not in visited or weight < visited[v]:
                 visited[v] = weight
                 heapq.heappush(h, (weight, v))
-                path[v] = min_node
-
-
-
-    return 1
-
-    # def _
+                
+            
+    return (0, 0)
 
 if __name__ == "__main__":
     g = Graph(5)
     g.add_edge('A', 'B', 9)
     g.add_edge('B', 'C', 30)
     g.add_edge('B', 'D', 9)
-    g.add_edge('C', 'A', 3)
-    d = dijkstra(g, 'A', 'D')
+    d, p = dijkstra(g, 'A', 'D')
     print(d)
     print()
-    # print(p)
+    print(p)

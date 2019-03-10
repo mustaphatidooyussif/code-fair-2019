@@ -2,7 +2,7 @@
 @author Mustapha Tidoo and Samuel Atule
 """
 import csv 
-from graph import Graph
+from graph2 import Graph
 import matplotlib.pyplot as plt 
 from heapq import heappush, heappop
 import math 
@@ -93,7 +93,9 @@ class AirlineTransportation(object):
                 dst_airport_cord = line[5]
                 if src_airport_cord in self.cordinates and dst_airport_cord in self.cordinates:
                     d = self._haversine(self.cordinates[src_airport_cord], self.cordinates[dst_airport_cord]) 
-                    g.add_edge(line[2], line[4], d, line[7], line[0])
+
+                    #add_edge(from_node, to_node, weight, stops, airline_code)
+                    g.add_edge(line[2], line[4], d, line[7], line[0]) 
 
                     #decode src from file
                     if self.cordinates.get(self.source.lower(), None) == line[3]:
@@ -104,7 +106,7 @@ class AirlineTransportation(object):
                     if self.cordinates.get(self.destination.lower(), None) == line[5]:
                         self.destination_code = line[4] 
 
-            return g.get_graph()
+            return g
 
     def dijsktra(self):
         """
@@ -118,27 +120,36 @@ class AirlineTransportation(object):
             print("Error: Unsupported Request")
             exit(0)
 
-         #(status, destination, stops, airline_code) e.g (333.5901828627264, 'URC', '0', 'CZ')
-        visited  =  set()
-        mins = {self.source_code: 0}
-        heappush(self.heap, (0, self.source_code, 0, '', ()))  #Initialize the source as the root of the heap
+        #(status, destination, stops, airline_code) e.g (333.5901828627264, 'URC', '0', 'CZ')
+        visited = {self.source_code: 0}
+        heappush(self.heap, (0, self.source_code))
+        path = []
+        airlines_used = {self.source_code: 'No airline'}
+        stops = {"total": 0}
+        nodes = set(self.graph.nodes)
+        while nodes and self.heap:
+            current_weight, min_node = heappop(self.heap)
+            try:
+                while min_node not in nodes:
+                    current_weight, min_node = heappop(self.heap)
+            except IndexError:
+                break
 
-        while self.heap:
-            (d1, u, stop1, airline, path) = heappop(self.heap)
-            if u not in visited :
-                visited .add(u)
-                path += (u, )  #edit to have airline code , src airport code and dest airport code
-                if u == self.destination_code : return (d1, stop1, path)
-                for d2, v, stop2, airline2 in self.graph.get(u, ()):
-                    if v in visited : continue
-                    prev = mins.get(v, None)
-                    next_d = d1 + d2
-                    next_stop = int(stop1) + int(stop2)
-                    if prev is None or next_d < prev:
-                        mins[v] = next_d
-                        heappush(self.heap, (next_d, v, next_stop, airline2, path))
-                
-        return -1 
+            nodes.remove(min_node)
+            path.append(min_node)
+            if min_node == self.destination_code:
+                return visited, path, airlines_used, stops
+
+            for v in self.graph.edges[min_node]:
+                weight = current_weight + self.graph.distances[min_node, v]
+                if v not in visited or weight < visited[v]:
+                    visited[v] = weight
+                    airlines_used[v] = self.graph.airlines[min_node, v]
+                    stops[v] = self.graph.stops[min_node, v]  #stops
+                    stops['total'] = stops.get('total') + int(self.graph.stops[min_node, v]) #count stops
+                    heappush(self.heap, (weight, v))
+
+        return (0, 0, 0, 0)
 
 if __name__ == "__main__":
     input_file =  sys.argv[1]
@@ -151,5 +162,15 @@ if __name__ == "__main__":
             input_value.append(line)
 
     a = AirlineTransportation(input_value[0], input_value[1])
-    print(a.dijsktra())
+    destination_code = a.destination_code
+    distance, path, airline, stops = a.dijsktra()
+
+    for i in range(len(path)-1):
+        # airline code, from airport, to airport, stops
+        print(airline[path[i+1]], path[i], path[i+1], stops[path[i+1]])
+
+    # total distance
+    print(distance[destination_code])
+
+    print(stops.get('total'))
 

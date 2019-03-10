@@ -19,10 +19,16 @@ class Graph(object):
     """
 
     def __init__(self):
-        self.graph = defaultdict(list)
+        self.nodes = set()
+        self.edges = defaultdict(list)
+        self.distances = {}
+        self.stops = {}
+        self.airlines = {}
 
     def add_edge(self, from_node, to_node, weight, stops, airline_code):
-        self.graph[from_node].append((weight, to_node, stops, airline_code)) #(status, destination, stops, airline_code)
-
-    def get_graph(self):
-        return self.graph
+        self.nodes.add(from_node)
+        self.nodes.add(to_node)
+        self.edges[from_node].append(to_node) #(status, destination, stops, airline_code)
+        self.distances[from_node, to_node] = weight
+        self.stops[from_node, to_node] = stops
+        self.airlines[from_node, to_node] = airline_code
