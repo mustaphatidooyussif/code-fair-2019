@@ -24,7 +24,7 @@ class Graph(object):
     def add_edge(self, src, dst, weight, stops, airline_code):
         if src not in self.graph:    #
             self.graph[src] = []
-        self.graph[src].append((weight, dst, stops, airline_code)) #(status, destination, distance, stops, airline_code)
+        self.graph[src].append((weight, dst, stops, airline_code)) #(status, destination, stops, airline_code)
 
     def get_graph(self):
         return self.graph

@@ -119,25 +119,25 @@ class AirlineTransportation(object):
             print("Error: Unsupported Request")
             exit(0)
 
-         #(status, destination, distance, stops, airline_code)
+         #(status, destination, stops, airline_code) e.g (333.5901828627264, 'URC', '0', 'CZ')
         seen =  set()
         mins = {self.source_code: 0}
-        heappush(self.heap, (0, self.source_code, 0, '', ()))
+        heappush(self.heap, (0, self.source_code, 0, '', ()))  #Initialize the source as the root of the heap
 
         while self.heap:
-            (d1, v1, stop1, airline, path) = heappop(self.heap)
-            if v1 not in seen:
-                seen.add(v1)
-                path += (v1, )  #edit to have airline code , src airport code and dest airport code
-                if v1 == self.destination_code : return (d1, stop1, path)
-                for d2, v2, stop2, airline2 in self.graph.get(v1, ()):
-                    if v2 in seen: continue
-                    prev = mins.get(v2, None)
+            (d1, u, stop1, airline, path) = heappop(self.heap)
+            if u not in seen:
+                seen.add(u)
+                path += (u, )  #edit to have airline code , src airport code and dest airport code
+                if u == self.destination_code : return (d1, stop1, path)
+                for d2, v, stop2, airline2 in self.graph.get(u, ()):
+                    if v in seen: continue
+                    prev = mins.get(v, None)
                     next_d = d1 + d2
                     next_stop = int(stop1) + int(stop2)
                     if prev is None or next_d < prev:
-                        mins[v2] = next_d
-                        heappush(self.heap, (next_d, v2, next_stop, airline2, path))
+                        mins[v] = next_d
+                        heappush(self.heap, (next_d, v, next_stop, airline2, path))
                 
         return -1 
 
