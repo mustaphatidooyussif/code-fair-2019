@@ -14,7 +14,7 @@ class Graph:
         self.distances[from_node, to_node] = distance
 
 
-def dijkstra(graph, initial):
+def dijkstra(graph, initial, target):
     visited = {initial: 0}
     h = [(0, initial)]
     path = {}
@@ -29,6 +29,9 @@ def dijkstra(graph, initial):
         except IndexError:
             break
 
+        if min_node == target:
+            return visited, path
+
         nodes.remove(min_node)
 
         for v in graph.edges[min_node]:
@@ -38,7 +41,11 @@ def dijkstra(graph, initial):
                 heapq.heappush(h, (weight, v))
                 path[v] = min_node
 
-    return visited, path
+
+
+    return 1
+
+    # def _
 
 if __name__ == "__main__":
     g = Graph(5)
@@ -46,7 +53,7 @@ if __name__ == "__main__":
     g.add_edge('B', 'C', 30)
     g.add_edge('B', 'D', 9)
     g.add_edge('C', 'A', 3)
-    d, p = dijkstra(g, 'A')
+    d = dijkstra(g, 'A', 'D')
     print(d)
     print()
-    print(p)
+    # print(p)
