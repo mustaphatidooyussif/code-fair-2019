@@ -4,11 +4,12 @@ from collections import defaultdict
 
 class Graph:
     def __init__(self, n):
-        self.nodes = set(range(n))
+        self.nodes = set()
         self.edges = defaultdict(list)
         self.distances = {}
 
     def add_edge(self, from_node, to_node, distance):
+        self.nodes.add(from_node)
         self.edges[from_node].append(to_node)
         self.distances[from_node, to_node] = distance
 
@@ -19,7 +20,6 @@ def dijkstra(graph, initial):
     path = {}
 
     nodes = set(graph.nodes)
-    print(nodes)
 
     while nodes and h:
         current_weight, min_node = heapq.heappop(h)
@@ -46,6 +46,7 @@ if __name__ == "__main__":
     g.add_edge('B', 'C', 30)
     g.add_edge('B', 'D', 9)
     g.add_edge('C', 'A', 3)
-    g.add_edge('D', 'C', 1)
-    d = dijkstra(g, 'D')
+    d, p = dijkstra(g, 'A')
     print(d)
+    print()
+    print(p)

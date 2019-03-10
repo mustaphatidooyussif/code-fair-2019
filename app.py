@@ -88,20 +88,23 @@ class AirlineTransportation(object):
             u = heappop(self.heap)
 
             not_dead_end = self.graph.get(u[2], None) 
+
+            # check if destination is reached
+            if u[0] != math.inf and u[2]  == self.destination_code:
+                return optimal_path
+
             if not_dead_end:
+                print(u)
                 optimal_path.append(u)
-
-                # check if destination is reached
-                if u[0] != math.inf and u[2]  == self.destination_code:
-                    return optimal_path
-
                 for v in not_dead_end:
+                    print(v)
                     status_of_adj = float(u[0]) + float(v[1])
                     if u[0] != math.inf and status_of_adj < v[3]:
-                        self.heap.pop(self.heap.index((v[3], v[1], v[0], v[2])))
+                        # self.heap.pop(self.heap.index((v[3], v[1], v[0], v[2])))
+                        if (v[3], v[1], v[0], v[2]) in self.heap:
+                            self.heap.remove(((v[3], v[1], v[0], v[2])))
                         # update status
                         heappush(self.heap, (status_of_adj, v[1], v[0], v[2]))
-                    
                     
                 # print(optimal_path)
         # path doesn't exist
