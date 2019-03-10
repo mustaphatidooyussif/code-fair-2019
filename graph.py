@@ -3,6 +3,8 @@
 """
 import sys
 import math 
+from collections import defaultdict
+
 class Graph(object):
     """
     Graph class 
@@ -19,12 +21,10 @@ class Graph(object):
     """
 
     def __init__(self):
-        self.graph = {}
+        self.graph = defaultdict(list)
 
-    def add_edge(self, src, dst, weight, stops, airline_code):
-        if src not in self.graph:    #
-            self.graph[src] = []
-        self.graph[src].append((weight, dst, stops, airline_code)) #(status, destination, stops, airline_code)
+    def add_edge(self, from_node, to_node, weight, stops, airline_code):
+        self.graph[from_node].append((weight, to_node, stops, airline_code)) #(status, destination, stops, airline_code)
 
     def get_graph(self):
         return self.graph
