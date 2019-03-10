@@ -15,7 +15,7 @@ class Graph(object):
     :param from_node: The source airport code.
     :param stops: The number of stops.
     :param to_node: The destination airport code.
-    :param status: The stutus of the Vertex indicating visited or unvisited. 
+    :param status: The status of the Vertex indicating visited or unvisited. 
     """
 
     def __init__(self):

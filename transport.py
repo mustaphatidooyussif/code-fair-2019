@@ -102,7 +102,7 @@ class AirlineTransportation(object):
 
                     #decode dest from file
                     if self.cordinates.get(self.destination.lower(), None) == line[5]:
-                        self.destination_code = line[4] 
+                        self.destination_code = line[4]
 
             return g.get_graph()
 
@@ -125,8 +125,8 @@ class AirlineTransportation(object):
 
         while self.heap:
             (d1, u, stop1, airline, path) = heappop(self.heap)
-            if u not in visited :
-                visited .add(u)
+            if u not in visited:
+                visited.add(u)
                 path += (u, )  #edit to have airline code , src airport code and dest airport code
                 if u == self.destination_code : return (d1, stop1, path)
                 for d2, v, stop2, airline2 in self.graph.get(u, ()):

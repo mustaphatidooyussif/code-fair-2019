@@ -20,6 +20,7 @@ class Graph(object):
 
     def __init__(self):
         self.graph = defaultdict(list)
+        
 
     def add_edge(self, from_node, to_node, weight, stops, airline_code):
         self.graph[from_node].append((weight, to_node, stops, airline_code)) #(status, destination, stops, airline_code)
