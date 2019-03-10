@@ -28,10 +28,6 @@ class AirlineTransportation(object):
         self.destination_code = None
         self.source_airline = None
         self.cordinates = self._airport_cordinates()  #get the airports cordinates
-        self.graph = self._generate_graph()
-        self.heap = []
-
-
 
     def _haversine(self, P, Q):
         """
@@ -98,6 +94,8 @@ class AirlineTransportation(object):
                     g.add_edge(line[2], line[4], d, line[7], line[0]) 
 
                     #decode src from file
+                    # print(self.cordinates.get(self.source.lower()))
+                    # print(self.source)
                     if self.cordinates.get(self.source.lower(), None) == line[3]:
                         self.source_code = line[2]
                         self.source_airline = line[0]
@@ -105,10 +103,27 @@ class AirlineTransportation(object):
                     #decode dest from file
                     if self.cordinates.get(self.destination.lower(), None) == line[5]:
                         self.destination_code = line[4] 
-
             return g
 
-    def dijsktra(self):
+    def get_optimal_path(self):
+        """
+        This function calls the private _dijkstra to find the optimal 
+        routes from start to end
+        """
+        graph = self._generate_graph()
+        start = self.source_code
+        end = self.destination_code
+        print(start)
+        print(end)
+
+        distance, path, airline, stops = self._dijsktra(graph, start, end)
+        if distance == 0 or path ==0 or airline ==0 or stops == 0 :
+            print("Error: Unsrupported Request")
+            exit(0)
+    
+        return distance, path, airline, stops
+
+    def _dijsktra(self, graph, start, end):
         """
         Finding optimal path
 
@@ -116,38 +131,41 @@ class AirlineTransportation(object):
         :return : it returns tuples containing the total distance, source and destination airport
                   available, othwerise raises an exception. 
         """
-        if self.source_code is None or self.destination_code is None:
+        
+        if start is None or end is None:
             print("Error: Unsupported Request")
             exit(0)
 
-        #(status, destination, stops, airline_code) e.g (333.5901828627264, 'URC', '0', 'CZ')
-        visited = {self.source_code: 0}
-        heappush(self.heap, (0, self.source_code))
+        # Initializations
+        heap = []
+        visited = {start: 0}
+        heappush(heap, (0, start))
         path = []
-        airlines_used = {self.source_code: 'No airline'}
+        airlines_used = {start: 'No airline'}
         stops = {"total": 0}
-        nodes = set(self.graph.nodes)
-        while nodes and self.heap:
-            current_weight, min_node = heappop(self.heap)
+        nodes = set(graph.nodes)
+
+        while nodes and heap:
+            current_weight, min_node = heappop(heap)
             try:
                 while min_node not in nodes:
-                    current_weight, min_node = heappop(self.heap)
+                    current_weight, min_node = heappop(heap)
             except IndexError:
                 break
 
             nodes.remove(min_node)
             path.append(min_node)
-            if min_node == self.destination_code:
+            if min_node == end:
                 return visited, path, airlines_used, stops
 
-            for v in self.graph.edges[min_node]:
-                weight = current_weight + self.graph.distances[min_node, v]
+            for v in graph.edges[min_node]:
+                weight = current_weight + graph.distances[min_node, v]
                 if v not in visited or weight < visited[v]:
                     visited[v] = weight
-                    airlines_used[v] = self.graph.airlines[min_node, v]
-                    stops[v] = self.graph.stops[min_node, v]  #stops
-                    stops['total'] = stops.get('total') + int(self.graph.stops[min_node, v]) #count stops
-                    heappush(self.heap, (weight, v))
+                    airlines_used[v] = graph.airlines[min_node, v]
+                    stops[v] = graph.stops[min_node, v]  #stops
+                    stops['total'] = stops.get('total') + int(graph.stops[min_node, v]) #count stops
+                    heappush(heap, (weight, v))
 
         return (0, 0, 0, 0)
 
@@ -163,7 +181,7 @@ if __name__ == "__main__":
 
     a = AirlineTransportation(input_value[0], input_value[1])
     destination_code = a.destination_code
-    distance, path, airline, stops = a.dijsktra()
+    distance, path, airline, stops = a.get_optimal_path()
     # Output
     for i in range(len(path)-1):
         # airline code, from airport, to airport, stops
@@ -176,7 +194,7 @@ if __name__ == "__main__":
     print("Total additional stops: ", stops.get('total'))
 
     # Total distance
-    print("Total distance: ", distance[destination_code])
+    # print("Total distance: ", distance[destination_code])
 
     # Optimality criteria
     print("Optimality criteria: distance")

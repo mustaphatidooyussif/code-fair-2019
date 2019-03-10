@@ -21,6 +21,7 @@ def dijkstra(graph, initial, target):
     path = []
 
     nodes = set(graph.nodes)
+    print(graph.edges)
     while nodes and h:
         current_weight, min_node = heapq.heappop(h)
         try:
@@ -54,6 +55,6 @@ if __name__ == "__main__":
     g.add_edge('D', 'E', 2)
     g.add_edge('D', 'A', 3)
     d, p = dijkstra(g, 'A', 'D')
-    print(d)
-    print()
-    print(p)
+    # print(d)
+    # print()
+    # print(p)
